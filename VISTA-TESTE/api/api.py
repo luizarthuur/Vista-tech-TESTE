@@ -14,6 +14,8 @@ from core.deps import get_session
 
 router = APIRouter()
 
+
+#POST Curso
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=CursoSchema)
 async def postCurso(curso: CursoSchema, db: AsyncSession = Depends(get_session)):
 
@@ -24,3 +26,14 @@ async def postCurso(curso: CursoSchema, db: AsyncSession = Depends(get_session))
     await db.commit()
 
     return novo_curso
+
+
+#GET Cursos
+@router.get('/', response_model=List[CursoSchema])
+async def getcursos(db: AsyncSession = Depends(get_session)):
+    async with db as session:
+        query = select(CursoModel)
+        result = await session.execute(query)
+        cursos: List[CursoModel] = result.scalars().all()
+
+        return cursos
